@@ -4,9 +4,7 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta http-equiv="refresh" content="<?php echo $sec?>;URL='<?php echo $page?>'">
-	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8" http-equiv="refresh">
 </head>
 
 <body>
@@ -19,23 +17,27 @@
 		</div>
 	</div>
 	
-	<nav class="navbar navbar-inverse">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="#">WebSiteName</a>
-    </div>
-    <ul class="nav navbar-nav">
-      <li><a href="#">Home</a></li>
-      <li><a href="view.php">View Mode</a></li>
-      <li><a href="tutorial.php">Control Mode</a></li>
-    </ul>
-	<ul class="nav navbar-nav navbar-right">
-		<li><a href="signup.php"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-		<li><a href="login.php"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-	</ul>
-  </div>
-</nav>
-	
+	<nav class="navbar navbar-expand-lg navbar-inverse">
+		<a class="navbar-brand" href="index.php">WebSiteName</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+		</button>
+			
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+				<ul class="nav navbar-nav navbar-nav mr-auto">
+					<li><a href="index.php">Home</a></li>
+					<li><a href="view.php">View Mode</a></li>
+					<li><a href="controlposition.php">Control Mode</a></li>
+				</ul>
+				
+				<ul class="nav navbar-nav navbar-right">		
+					<li><a href="logout.php"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+					<li><a href="signup.php"><span class="glyphicon glyphicon-user"></span> Sign Up an User</a></li>
+					<li><a href="login.php"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
 </body>	
 	
 	

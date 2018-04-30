@@ -14,13 +14,11 @@
 	<div class="header">
 		<?php include('./header.html');?>
 	</div>
-	
-		
 	<div class="text-center">
-
-		<video src="http://192.168.105.71:8080/stream.ogg" autoplay="autoplay" controls ></video>
-
-    </div>
-    
+		<h1> Welcome to this website!</h1>    
+		<h2> Please choose what you wish to do on the top of the screen.</h2>
+		<img src="ustepper.jpg" alt="Robotic Manipulator" >
+	</div>
+		
     </body>
 </html>    

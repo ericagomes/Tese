@@ -1,3 +1,11 @@
+<?php 
+session_start();
+if(!isset($_SESSION['id'])){
+   header("Location: ../login.php");
+   
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   	<head>
@@ -6,9 +14,8 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 		<script src="../nipplejs-master/dist/nipplejs.js" charset="utf-8"></script>
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta http-equiv="refresh" content="<?php echo $sec?>;URL='<?php echo $page?>'">
-		<meta charset="utf-8">
+		<meta name="viewport" charset="utf-8" content="width=device-width, initial-scale=1">
+		
 		<style>
 			html, body 
 			{

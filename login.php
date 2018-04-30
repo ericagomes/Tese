@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
   	<head>
@@ -7,9 +5,7 @@
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta http-equiv="refresh" content="<?php echo $sec?>;URL='<?php echo $page?>'">
-		<meta charset="utf-8">
+		<meta name="viewport" charset="utf-8" content="width=device-width, initial-scale=1">
 
 	</head>
 	
@@ -26,22 +22,17 @@
 		<form action="login.php" method="post">
 		  <div class="form-group">
 			<label for="email">Email address:</label>
-			<input type="email" name="email" class="form-control" placeholder="example: up201809999@fe.up.pt" id="email">
+			<input type="email" name="email" class="form-control" placeholder="example: up201809999@fe.up.pt" id="email" required>
 		  </div>
 		  <div class="form-group">
 			<label for="passwordd">Password:</label>
-			<input type="password" name="password" class="form-control" id="password">
+			<input type="password" name="password" class="form-control" id="password" required>
 		  </div>
 		  <div class="checkbox">
 			<label><input type="checkbox"> Remember me</label>
 		  </div>
 		  <button type="submit" class="btn btn-default" name="submit" >Login</button>
 		</form>
-	<div class="dropdown-divider"></div>
-	  <a class="dropdown-item" href="signup.php">New around here? Sign up</a>
-	  <br>
-	  <a class="dropdown-item" href="#">Forgot password?</a>
-	</div>
 	</div>
 	
 	<?php
@@ -49,30 +40,45 @@
 	ini_set('display_errors', 1);
 	ini_set('display_startup_errors', 1);
 	error_reporting(E_ALL);
-		
-		include_once 'db.php';
+	
 
 		if(isset($_POST['submit'])){
+			
+			include_once 'db.php';
 			$email=mysqli_real_escape_string($conn, $_POST['email']);
 			$password=mysqli_real_escape_string($conn, $_POST['password']);
 			
-			if(empty($email) || empty($password)){
-				header("Location: ../login.php?login=empty");
-				exit();
-			}
-		else {
 			$result = mysqli_query($conn, "SELECT * FROM users WHERE email='$email'");
 			$resultCheck=mysqli_num_rows($result);
-			if($resultCheck >0){
-				
-			$row=mysqli_fetch_assoc($result);
-				
+			
+			if($resultCheck <1){				
+				echo '<script language="javascript">';
+				echo 'alert("Email/user doesnt exist!")';
+				echo '</script>';
+				exit();
+			}
+			else{
+				if($row=mysqli_fetch_assoc($result)){
+					$hashedPwdCheck= password_verify($password, $row['password']);
+					if($hashedPwdCheck == false){
+						echo '<script language="javascript">';
+						echo 'alert("Wrong Password!")';
+						echo '</script>';
+						exit();
+					}
+					elseif($hashedPwdCheck == true){
+						$_SESSION['u_id']=$row['id'];
+						$_SESSION['u_first']=$row['firstname'];
+						$_SESSION['u_last']=$row['lastname'];
+						$_SESSION['u_email']=$row['email'];
+						$_SESSION['u_type']=$row['admin'];
+						header("Location: ../view.php");
+					}
+				}
 			}
 		}
 	
-
 	?>
 	
 	</body>
 </html>
-

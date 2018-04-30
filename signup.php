@@ -5,10 +5,7 @@
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta http-equiv="refresh" content="<?php echo $sec?>;URL='<?php echo $page?>'">
-		<meta charset="utf-8">
-
+		<meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
 	</head>
 	
 	<body>
@@ -21,34 +18,34 @@
 	<br>
 	
 	<div class="container">
-		<form action="/signup.php">
+		<form action="/signup.php" method="post">
 		<div class="form-group">
-			<label for="name">Name</label>
-			<input type="name" name="name" class="form-control" placeholder="example: John Doe" id="name" required>
+			<label for="firstname">First Name</label>
+			<input type="text" name="firstname" class="form-control" placeholder="example: John" id="firstname" required>
+		</div>
+		<div class="form-group">
+			<label for="lastname">Last Name</label>
+			<input type="text" name="lastname" class="form-control" placeholder="example: Doe" id="lastname" required>
 		</div>
 		<div class="form-group">
 			<label for="class">Class</label>
-			<input type="class" name="class" class="form-control" placeholder="example: 12C" id="class" required>
+			<input type="text" name="class" class="form-control" placeholder="example: 12C" id="class">
 		</div>
 		<div class="form-group">
-			<label for="group">Class</label>
-			<input type="group" name="group" class="form-control" placeholder="example: 3" id="class" required>
+			<label for="group">Group</label>
+			<input type="text" name="group" class="form-control" placeholder="example: 3" id="group">
 		</div>
 		<div class="form-group">
 			<label for="email">Email address:</label>
 			<input type="email" name="email" class="form-control" placeholder="example: up201809999@fe.up.pt" id="email" required>
 		</div>
 		<div class="form-group">
-			<label for="admin">Password:</label>
-			<input type="admin" name="admin" class="form-control" id="admin" placeholder="1 for admin and 0 if not" required>
+			<label for="admin">Type</label>
+			<input type="text" name="admin" class="form-control" id="admin" placeholder="A for admin and N if not" required>
 		</div>
 		<div class="form-group">
 			<label for="pwd">Password:</label>
-			<input type="password" name="pwd-repeat" class="form-control" id="pwd" placeholder="Password" required>
-		</div>
-		<div class="form-group">
-			<label for="pwd-repeat">Repeat Password:</label>
-			<input type="password" name="pwd-repeat" class="form-control" id="pwd-repeat" placeholder="Repeat Password" required>
+			<input type="text" name="pwd" class="form-control" id="pwd" placeholder="Password" required>
 		</div>
 		<button type="submit" class="btn btn-default" name="submit" >Sign Up</button>
 		</form>
@@ -60,49 +57,57 @@
 	error_reporting(E_ALL);
 		
 	include_once 'db.php';
-
+		
 	if(isset($_POST['submit'])){
-			$email=mysqli_real_escape_string($conn, $_POST['email']);
-			$pwd=mysqli_real_escape_string($conn, $_POST['pwd']);
-			$name=mysqli_real_escape_string($conn, $_POST['name']);
-			$pwd_repeat=mysqli_real_escape_string($conn, $_POST['pwd-repeat']);
+			$firstname=mysqli_real_escape_string($conn, $_POST['firstname']);
+			$lastname=mysqli_real_escape_string($conn, $_POST['lastname']);
 			$class=mysqli_real_escape_string($conn, $_POST['class']);
 			$group=mysqli_real_escape_string($conn, $_POST['group']);
+			$email=mysqli_real_escape_string($conn, $_POST['email']);
 			$admin=mysqli_real_escape_string($conn, $_POST['admin']);
-			
-			//check for errors
-			if(empty($email) || empty($password) || empty($name) || empty($class) || empty($group) || empty($pwd) || empty($pwd_repeat){
-				header("Location: ../signup.php?signup==empty");
+			$pwd=mysqli_real_escape_string($conn, $_POST['pwd']);
+			$group_id= $class.$group;
+		
+		 if(!(preg_match("/^[a-zA-Z]*$/", $firstname)) || !(preg_match("/^[a-zA-Z]*$/", $lastname))){
+			echo '<script language="javascript">';
+			echo 'alert("Invalid Name!")';
+			echo '</script>';
+			exit();
+		}
+		else{
+			if(!(filter_var($email, FILTER_VALIDATE_EMAIL))){
+				echo '<script language="javascript">';
+				echo 'alert("Invalid Email!")';
+				echo '</script>';
 				exit();
 			}
-			else {
-				if(!preg_match("/^[a-zA-Z]*$/", $name)){
-				header("Location: ../signup.php?signup=invalid");
-				exit();
+			else{
+				$result = mysqli_query($conn, "SELECT * FROM users WHERE email='$email'");
+				$resultCheck=mysqli_num_rows($result);
+				if($resultCheck > 0){
+					echo '<script language="javascript">';
+					echo 'alert("Email/user already exists!")';
+					echo '</script>';
+					exit();
 				}
 				else{
-					if(filter_var($email, FILTER_VALIDATE_EMAIL)){
-						header("Location: ../signup.php?signup=email");
+					$hashedPwd= password_hash($pwd, PASSWORD_DEFAULT);
+					$sql1="INSERT INTO users (firstname, lastname, admin, email, password, group_id) VALUES ('$firstname', '$lastname', '$admin', '$email', '$hashedPwd', '$group_id');";
+					if (mysqli_query($conn, $sql1)) {
+						header("Location: ../signup.php?signup=sucess");
+						exit();
+					} 
+					else {
+						error_log("Error: " . $sql1 . "<br>" . mysqli_error($conn));
+						header("Location: ../signup.php?signup=connectionerror");
 						exit();
 					}
-					else{
-						$result = mysqli_query($conn, "SELECT * FROM users WHERE email='$email'");
-						$resultCheck=mysqli_num_rows($result);
-						if($resultCheck > 0){
-							header("Location: ../signup.php?signup=usertaken");
-							exit();
-						}
-						else{
-							$hashedPwd= password_hash($pwd, PASSWORD_DEFAULT);
-							$sql="INSERT INTO users (name, email, password, admin) VALUES ('$name', '$email', '$hashedPwd', '$admin');";
-							mysqli_query($conn, $sql);
-							header("Location: ../signup.php?signup=sucess");
-							exit();
-						}
-					}
+					
+					mysqli_close($conn);
 				}
 			}
 		}
+	}	
 	?>
 	
 	</div>
