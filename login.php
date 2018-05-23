@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   	<head>
-		<title>Testes de coisas precisas</title>
+		<title>Log In</title>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -12,42 +12,36 @@
 	<body>
 		
 	<div class="header">
-		<?php include('./header.html');?>
+		<?php include('./header.php');
+		include_once 'db.php';
+		?>
 	</div>
 	
-	<div> <h2>Please fill the following blanks with your information to login</h2></div>
-	<br>
 	
 	<div class="container">
+		<h2>Please fill the following information to login:</h2>
+		<br>
 		<form action="login.php" method="post">
 		  <div class="form-group">
 			<label for="email">Email address:</label>
 			<input type="email" name="email" class="form-control" placeholder="example: up201809999@fe.up.pt" id="email" required>
 		  </div>
-		  <div class="form-group">
-			<label for="passwordd">Password:</label>
+		  <div class="form-group">	
+		 	<label for="password">Password:</label>
 			<input type="password" name="password" class="form-control" id="password" required>
 		  </div>
-		  <div class="checkbox">
-			<label><input type="checkbox"> Remember me</label>
-		  </div>
-		  <button type="submit" class="btn btn-default" name="submit" >Login</button>
+		  <button type="submit" class="btn btn-secondary btn-lg" name="submit" >Login</button>
 		</form>
+		<br>
+		<a href="forgot.php"><button class="btn btn-secondary btn-sm" name="forgetpwd"/>I forgot my password</button></a>
 	</div>
 	
 	<?php
-	
-	ini_set('display_errors', 1);
-	ini_set('display_startup_errors', 1);
-	error_reporting(E_ALL);
-	
 
 		if(isset($_POST['submit'])){
 			
-			include_once 'db.php';
 			$email=mysqli_real_escape_string($conn, $_POST['email']);
 			$password=mysqli_real_escape_string($conn, $_POST['password']);
-			
 			$result = mysqli_query($conn, "SELECT * FROM users WHERE email='$email'");
 			$resultCheck=mysqli_num_rows($result);
 			
@@ -72,13 +66,27 @@
 						$_SESSION['u_last']=$row['lastname'];
 						$_SESSION['u_email']=$row['email'];
 						$_SESSION['u_type']=$row['admin'];
-						header("Location: ../view.php");
+						$_SESSION['u_group']=$row['group_id'];
+						$_SESSION['loggedin']=1;					
+						$sql1="UPDATE users SET lastlogin=now() WHERE email='$email'";
+						$sql2="UPDATE users SET loggedin=1 WHERE email='$email'";
+						if (mysqli_query($conn, $sql1) AND mysqli_query($conn, $sql2) ) {
+							header("Location: ../profile.php");
+							exit();
+						} 
+						else {
+							error_log("Error: " . $sql1 . $sql2 ."<br>" . mysqli_error($conn));
+							header("Location: ../login.php?login=connectionerror");
+							exit();
+						}
+						mysqli_close($conn);
+						exit();
 					}
 				}
 			}
+			
 		}
-	
-	?>
-	
+	include('./footer.php');
+?>
 	</body>
 </html>

@@ -1,7 +1,35 @@
+<?php
+include('./header.php');
+include_once 'db.php';
+if ( $_SESSION['loggedin'] == 2 OR $_SESSION['loggedin'] == 1 ) {	
+	$uemail = $_SESSION['u_email'];
+	$sqll="UPDATE users SET loggedin=1 WHERE email='$uemail';";
+	mysqli_query($conn, $sqll);
+	$_SESSION['loggedin'] = 1;
+  // Makes it easier to read
+    $first_name = $_SESSION['u_first'];
+    $last_name = $_SESSION['u_last'];
+	$type= $_SESSION['u_type'];
+}	
+// Check if user is logged in using the session variable
+if ( $_SESSION['u_type'] == 'A' or $_SESSION['u_type'] == 'a') {
+	$ufirst_name = $_SESSION['u_first'];
+    $ulast_name = $_SESSION['u_last'];
+    $uemail = $_SESSION['u_email'];
+	$utype= $_SESSION['u_type'];
+}
+else {
+	echo '<script language="javascript">';
+	echo 'alert("Only an administrator can access this page.");';
+	echo 'window.location = "index.php";';
+	echo '</script>';
+	exit();
+}?>
+
 <!DOCTYPE html>
 <html lang="en">
   	<head>
-		<title>Testes de coisas precisas</title>
+		<title>Sign Up a New User</title>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -10,14 +38,11 @@
 	
 	<body>
 		
-	<div class="header">
-		<?php include('./header.html');?>
-	</div>
-	
-	<div> <h2>Please fill the following blanks to sign up</h2></div>
-	<br>
-	
+		
+		
 	<div class="container">
+		<h2>Please fill the following information to sign up a new user:</h2>
+		<br>
 		<form action="/signup.php" method="post">
 		<div class="form-group">
 			<label for="firstname">First Name</label>
@@ -47,17 +72,11 @@
 			<label for="pwd">Password:</label>
 			<input type="text" name="pwd" class="form-control" id="pwd" placeholder="Password" required>
 		</div>
-		<button type="submit" class="btn btn-default" name="submit" >Sign Up</button>
+		<button type="submit" class="btn btn-secondary" name="submit" >Sign Up</button>
 		</form>
 	
 	<?php
-	
-	ini_set('display_errors', 1);
-	ini_set('display_startup_errors', 1);
-	error_reporting(E_ALL);
-		
-	include_once 'db.php';
-		
+			
 	if(isset($_POST['submit'])){
 			$firstname=mysqli_real_escape_string($conn, $_POST['firstname']);
 			$lastname=mysqli_real_escape_string($conn, $_POST['lastname']);
@@ -92,15 +111,17 @@
 				}
 				else{
 					$hashedPwd= password_hash($pwd, PASSWORD_DEFAULT);
-					$sql1="INSERT INTO users (firstname, lastname, admin, email, password, group_id) VALUES ('$firstname', '$lastname', '$admin', '$email', '$hashedPwd', '$group_id');";
+					$sql1="INSERT INTO users (firstname, lastname, admin, email, password, group_id, loggedin) VALUES ('$firstname', '$lastname', '$admin', '$email', '$hashedPwd', '$group_id', 0);";
 					if (mysqli_query($conn, $sql1)) {
 						header("Location: ../signup.php?signup=sucess");
 						exit();
 					} 
 					else {
 						error_log("Error: " . $sql1 . "<br>" . mysqli_error($conn));
-						header("Location: ../signup.php?signup=connectionerror");
-						exit();
+							echo '<script language="javascript">';
+							echo 'alert("Ups! Something went wrong!")';
+							echo '</script>';
+							exit();
 					}
 					
 					mysqli_close($conn);
@@ -108,7 +129,9 @@
 			}
 		}
 	}	
-	?>
+	
+	include('./footer.php');
+?>
 	
 	</div>
 	</body>
