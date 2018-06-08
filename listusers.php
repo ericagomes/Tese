@@ -45,7 +45,7 @@ else {
 		<?php 
 		
 		//get results from database
-		$result = mysqli_query($conn,"SELECT firstname, lastname, email, admin, group_id, lastlogin, loggedin FROM users");
+		$result = mysqli_query($conn,"SELECT firstname, lastname, email, admin, group_id, lastlogin, loggedin FROM users ORDER BY firstname");
 	
 		echo '<table class="table table-hover">
 			<thead>

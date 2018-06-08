@@ -1,7 +1,7 @@
 <?php
 include('./header.php');
 include_once 'db.php';
-if ( $_SESSION['loggedin'] == 2 OR $_SESSION['loggedin'] == 1 ) {	
+if ( isset($_SESSION['loggedin']) AND ($_SESSION['loggedin'] == 2 OR $_SESSION['loggedin'] == 1)) {	
 	$uemail = $_SESSION['u_email'];
 	$sqll="UPDATE users SET loggedin=1 WHERE email='$uemail';";
 	mysqli_query($conn, $sqll);

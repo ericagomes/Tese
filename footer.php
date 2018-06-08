@@ -16,6 +16,8 @@
     color: black;
     text-align: center;
 }
+
+
 </style>
 
 </head>
@@ -28,7 +30,9 @@
 <footer class="footer container-fluid">
 
     <div class="text-center text-md-left">
-       	<a href="https://www.linkedin.com/in/ericacgomes/"><span class="glyphicon glyphicon-envelope"></span> Contact for Help </a>      	
+		
+		<p> Contact for help <span class="glyphicon glyphicon-envelope"></span> up201305377@fe.up.pt  </p>
+       	      	
     </div>
     <div class="footer-copyright py-3 text-center">
         © 2018 Copyright: Érica Gomes

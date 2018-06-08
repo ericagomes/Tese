@@ -6,15 +6,16 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 		<meta name="viewport" charset="utf-8" content="width=device-width, initial-scale=1">
-
 	</head>
 	
 	<body>
 	
-	<div class="header">
-		<?php include('./header.php');
+	
+		<?php 
 		include_once 'db.php';
-		if ( $_SESSION['loggedin'] == 2 OR $_SESSION['loggedin'] == 1 ) {	
+		include 'header.php';
+
+		if ((isset($_SESSION['loggedin']) AND ($_SESSION['loggedin'] == 2 OR $_SESSION['loggedin'] == 1 ))) {	
 			$uemail = $_SESSION['u_email'];
 			$sqll="UPDATE users SET loggedin=1 WHERE email='$uemail';";
 			mysqli_query($conn, $sqll);
@@ -36,3 +37,4 @@
 ?>
     </body>
 </html>    
+isset

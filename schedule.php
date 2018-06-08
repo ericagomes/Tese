@@ -25,7 +25,6 @@ else {
 	echo '</script>';  
 	exit();
 }?>
-
 <!DOCTYPE html>
 <html lang="en">
   	<head>
@@ -43,24 +42,24 @@ else {
 	<br>
 	<div class="row">
 		<h2>Please fill the following information to schedule a time for a group:</h2>
-		<h4>Note: Use only the "Remove" button if you wish to delete a schedule, not to update one.</h4>
+		<h4>Note: Use the "Remove" button if you wish to delete a schedule.</h4>
 		<br>
 		<form action="schedule.php" method="post">
 		  <div class="form-group">
 			<label for="group">Group ID</label>
 			<input type="text" name="group" class="form-control" placeholder="example: 10A1" id="group" required>
 		  </div>
-		   <div class="form-group">
+		  <div class="form-group">
 			<label for="zone">Zone</label>
 			<input type="text" name="zone" class="form-control" placeholder="1 or 2" id="zone">
 		  </div>
 		  <div class="form-group">	
-			<label for="i_time">Inicial Time</label>
-			<input type="datetime-local" name="i_time" class="form-control" id="i_time">
+			<label for="i_time">Initial Time</label>
+			<input type="datetime-local" name="i_time" class="form-control" id="i_time" required>
 		  </div>
 		  <div class="form-group">	
 			<label for="e_time">End Time</label>
-			<input type="datetime-local" name="e_time" class="form-control" id="e_time">
+			<input type="datetime-local" name="e_time" class="form-control" id="e_time" required>
 		  </div>
 		  <button type="submit" class="btn btn-secondary btn-lg" name="submit" >Schedule</button>
 		<br>
@@ -75,9 +74,14 @@ else {
 		<h2>This is the current schedule:</h2>
 		<br>
 		<?php 
-
+		//delete old schedules
+		date_default_timezone_set('Europe/London');
+		$today = date("Y-m-d H:i:s");  
+		$del= mysqli_query($conn, "DELETE FROM schedule WHERE (end<'$today')");
+		mysqli_query($conn, $del);
+		
 		//get results from database
-		$resultt = mysqli_query($conn,"SELECT group_name, begin, end FROM schedule");
+		$resultt = mysqli_query($conn, "SELECT * FROM schedule");
 	
 		echo '<table class="table table-hover">
 			<thead>
@@ -97,51 +101,56 @@ else {
 			echo '<td>' . $roww['end'] . '</td>';
 			echo '</tr>';
 		}
-		echo '</tbody></table>';
+		echo '</tbody></table>';	
 		
 		if(isset($_POST['submit'])){
 			$group=mysqli_real_escape_string($conn, $_POST['group']);
 			$zone=mysqli_real_escape_string($conn, $_POST['zone']);
-			$i_time=mysqli_real_escape_string($conn, $_POST['i_time']);
-			$e_time=mysqli_real_escape_string($conn, $_POST['e_time']);
-			$result = mysqli_query($conn, "SELECT * FROM users WHERE group_id='$group'");
-			$resultCheck=mysqli_num_rows($result);
-
-			if ($resultCheck<1){	
+			$beg=$_POST['i_time'];
+			$end=$_POST['e_time'];
+			$itime=mysqli_real_escape_string($conn, $_POST['i_time']);
+			$etime=mysqli_real_escape_string($conn, $_POST['e_time']);
+			
+			$result0 = mysqli_query($conn, "SELECT group_id FROM users WHERE group_id='$group'");
+			$resultCheckk=mysqli_num_rows($result0);
+			if($resultCheckk<1){
 				echo '<script language="javascript">';
-				echo 'alert("Ups! There isnt any group with that ID on the website! Please add an user from that group.")';
+				echo 'alert("Ups! The group you inserted does not have any students. Please sign up some students from that group or choose a different group.")';
 				echo '</script>';
 				exit();
-			}			
+			}
 			else{
-				$result1 = mysqli_query($conn, "SELECT * FROM schedule WHERE group_name='$group'");
-				$resultCheck1=mysqli_num_rows($result1);
-				if($resultCheck1<1){
-					$sql1="INSERT INTO schedule (group_name, begin, end, zone) VALUES ('$group','$i_time', '$e_time', '$zone');";
-				}
-				else{
-					$sql1="UPDATE schedule SET begin=('$i_time'), end=('$e_time') WHERE group_name='$group';";
-				}
-				if (mysqli_query($conn, $sql1)) {
-					echo '<script language="javascript">';
-					echo 'alert("You have sucessfully scheduled a group.");';
-					echo '</script>';
-					header("Refresh:0");
-					exit();
-				} 
-				else {
-					error_log("Error: " . $sql1 . "<br>" . mysqli_error($conn));
-					echo '<script language="javascript">';
-					echo 'alert("Ups! Something went wrong!")';
-					echo '</script>';
-					exit();
+				if(($today > $end) OR ($beg > $end)){
+						echo '<script language="javascript">';
+						echo 'alert("Ups! Something is wrong with the times you tried to input! Please try again.")';
+						echo '</script>';
+						exit();
+					}			
+				else{				
+					$sql0="INSERT INTO schedule (group_name, begin, end, zone) VALUES ('$group', '$itime', '$etime', '$zone');";
+					if (mysqli_query($conn, $sql0)) {
+						echo '<script language="javascript">';
+						echo 'alert("You have sucessfully scheduled a group.")';
+						echo '</script>';
+						echo("<script>location.href = '/schedule.php?added';</script>");
+					} 
+					else {
+						error_log("Error: ". $sql0 . "<br>" . mysqli_error($conn));
+						echo '<script language="javascript">';
+						echo 'alert("Ups! Something went wrong!2")';
+						echo '</script>';
+						exit();
+					}
+				mysqli_close($conn);
 				}
 			}	
 		}
-			
+
 		if(isset($_POST['remove'])){
 			
 			$group=mysqli_real_escape_string($conn, $_POST['group']);
+			$itime=mysqli_real_escape_string($conn, $_POST['i_time']);
+			$etime=mysqli_real_escape_string($conn, $_POST['e_time']);
 			$result = mysqli_query($conn, "SELECT * FROM schedule WHERE group_name='$group'");
 			$resultCheck=mysqli_num_rows($result);
 			
@@ -153,26 +162,23 @@ else {
 			}
 			else{
 				if($row=mysqli_fetch_assoc($result)){			
-					$sql1="DELETE FROM schedule WHERE group_name='$group'";
+					$sql1="DELETE FROM schedule WHERE (group_name='$group' AND begin='$itime' AND end='$etime')";
 					if (mysqli_query($conn, $sql1) ) {
 						echo '<script language="javascript">';
 						echo 'alert("You have sucessufully remove the group schedule.")';
 						echo '</script>';
-						header("Refresh:0");
-						exit();
+						echo("<script>location.href = '/schedule.php?removed';</script>");
 					} 
 					else {
 						error_log("Error: " . $sql1 ."<br>" . mysqli_error($conn));
-						header("Location: ../schedule.php?schedule=connectionerror");
+						echo("<script>location.href = '/schedule.php?error=removeconnection';</script>");
 						exit();
 					}
 					mysqli_close($conn);
-					exit();
 				}
 			}
 		}		
-	include('./footer.php');
-?>   
+	include('./footer.php');?>   
 	</div>
 </div> 
 </body>

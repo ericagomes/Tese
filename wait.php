@@ -8,7 +8,9 @@ if ( $_SESSION['loggedin'] == 1 OR 	$_SESSION['loggedin'] ==2){
 	$email = $_SESSION['u_email'];
 	$type= $_SESSION['u_type']; 
 	$group= $_SESSION['u_group'];
-	$sqll="UPDATE users SET loggedin=3 WHERE email='$email';";
+	date_default_timezone_set('Europe/London');
+	$today = date("Y-m-d H:i:s");
+	$sqll="UPDATE users SET loggedin=3, wait_entrytime=('$today') WHERE email='$email';";
 	mysqli_query($conn, $sqll);
 	$_SESSION['loggedin'] == 3;
 }

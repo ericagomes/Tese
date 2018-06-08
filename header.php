@@ -1,4 +1,39 @@
+<?php
+		session_start();
+		if(isset($_SESSION['loggedin'])){
+			$log= $_SESSION['loggedin'];
+			echo '<script type="text/javascript">';
+			echo "var loggedin = '<?php echo $log; ?>';";
+			echo '</script">';
+		}
+?>
 
+<script type="text/javascript">
+	// Set timeout variables.
+	var timoutNow = 900000; // Timeout in 15 mins.
+	var logoutUrl = 'logout.php'; // URL to logout page.
+
+	var timeoutTimer;
+
+	// Start timers.
+	function StartTimers() {
+		timeoutTimer = setTimeout("IdleTimeout()", timoutNow);
+	}
+
+	// Reset timers.
+	function ResetTimers() {
+		clearTimeout(timeoutTimer);
+		StartTimers();
+		$("#timeout").dialog('close');
+	}
+	    
+	// Logout the user.
+	function IdleTimeout() {
+		if (loggedin != 0){
+		window.location = logoutUrl;}
+	}	
+</script>
+    
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,12 +48,12 @@
 	}</style>
 </head>
 
-<body>
+<body onload="StartTimers();" onmousemove="ResetTimers();">
 	
 	<div class="container-fluid bg">	
 		<div class="page-header">
 			<div class="text-center">
-				<h1 center>Control of The Robotic Manipulator</h1>
+				<h1 center>FEUP ChemLab: Control of The Robotic Manipulator</h1>
 			</div>
 		</div>
 	</div>
@@ -31,7 +66,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>                        
       </button>
-      <a class="navbar-brand" href="index.php">WebSiteName</a>
+		<a class="navbar-brand" href="index.php">FEUP ChemLab</a>
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
 		<ul class="nav navbar-nav">
@@ -43,7 +78,7 @@
 
 		<ul class="nav navbar-nav navbar-right">	
 			<?php
-			session_start();
+			
 			if( isset($_SESSION['loggedin']))
 			{
 			?>

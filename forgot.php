@@ -32,7 +32,7 @@
 <?php
 	
 	function random_password( $length = 8 ) {
-		$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-=+;:,.?";
+		$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 		$password = substr( str_shuffle( $chars ), 0, $length );
     return $password;
 }
@@ -58,10 +58,12 @@
 				$hashedPwd= password_hash($pass, PASSWORD_DEFAULT);
 				$sql1="UPDATE users SET password=('$hashedPwd') WHERE email='$email'";
 				if (mysqli_query($conn, $sql1)) {
-					$message= "This is you new password:" . $password;
-					$headers= "From: up201305377@fe.up.pt";
-					$subject="Your new password";
-					mail($email, $subject, $message, $headers);
+					$message= "This is you new password:  " . $pass . ". You can change it in your profile.";
+					$headers= 'From: recovery@chemlab.pt' . "\r\n" .
+							'Reply-To: recovery@chemlab.pt' . "\r\n" .
+							'X-Mailer: PHP/' . phpversion();
+					$subject="[FEUP ChemLab] Your new password";
+					mail($to, $subject, $message, $headers);
 					echo '<script language="javascript">';
 					echo 'alert("A new password has been sent to your email!")';
 					echo '</script>';

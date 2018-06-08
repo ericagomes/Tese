@@ -25,7 +25,7 @@ else {
 	echo '</script>';
 	exit();  
 }?>
-?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -44,9 +44,15 @@ else {
 		<h2>Please fill the following information to Remove an User:</h2>
 		<br>
 		<form action="remove.php" method="post">
+		  <h3>To remove just an user:</h3> 
 		  <div class="form-group">
 			<label for="email">Email address:</label>
-			<input type="email" name="email" class="form-control" placeholder="example: up201809999@fe.up.pt" id="email" required>
+			<input type="email" name="email" class="form-control" placeholder="example: up201809999@fe.up.pt" id="email">
+		  </div>
+		 <h3>To remove a whole group:</h3> 
+		  <div class="form-group">
+			<label for="groupid">Group ID:</label>
+			<input name="groupid" class="form-control" placeholder="example: 11A1" id="groupid">
 		  </div>
 		  <button type="submit" class="btn btn-secondary btn-lg" name="submit" >Remove</button>
 		</form>
@@ -59,13 +65,16 @@ else {
 		if(isset($_POST['submit'])){
 
 			$email=mysqli_real_escape_string($conn, $_POST['email']);
+			$groupid=mysqli_real_escape_string($conn, $_POST['groupid']);
 			
 			$result = mysqli_query($conn, "SELECT * FROM users WHERE email='$email'");
+			$result1 = mysqli_query($conn, "SELECT * FROM users WHERE group_id='$groupid'");
 			$resultCheck=mysqli_num_rows($result);
+			$resultCheck1=mysqli_num_rows($result1);
 			
-			if($resultCheck <1){				
+			if(($resultCheck <1) AND ($resultCheck1 <1))  {				
 				echo '<script language="javascript">';
-				echo 'alert("Email/user doesnt exist!")';
+				echo 'alert("Email/user or group ID doesnt exist!")';
 				echo '</script>';
 				exit();
 			}
@@ -80,6 +89,22 @@ else {
 					} 
 					else {
 						error_log("Error: " . $sql1 ."<br>" . mysqli_error($conn));
+						header("Location: ../remove.php?remove=connectionerror");
+						exit();
+					}
+					mysqli_close($conn);
+					exit();
+				}	
+				elseif($row1=mysqli_fetch_assoc($result1)){			
+					$sql2="DELETE FROM users WHERE group_id='$groupid'";
+					if (mysqli_query($conn, $sql2) ) {
+						echo '<script language="javascript">';
+						echo 'alert("You have sucessufully remove the whole group.")';
+						echo '</script>';
+						exit();
+					} 
+					else {
+						error_log("Error: " . $sql2 ."<br>" . mysqli_error($conn));
 						header("Location: ../remove.php?remove=connectionerror");
 						exit();
 					}

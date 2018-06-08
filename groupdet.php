@@ -55,7 +55,6 @@ else {
 			echo '<td>' . $ugroup . '</td>';
 			echo '<td>' . $row['begin'] . '</td>';
 			echo '<td>' . $row['end'] . '</td>';
-			echo '<td>' . $row['lastlogin'] . '</td>';
 			echo '</tr>';
 		}
 		echo '</tbody></table>';

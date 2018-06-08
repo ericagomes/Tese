@@ -5,7 +5,7 @@ $email=$_SESSION['u_email'];
 $sql1="UPDATE users SET loggedin=0 WHERE email='$email'";
 if (mysqli_query($conn, $sql1)) {
 	session_unset();
-	session_destroy;
+	session_destroy();
 
 } 
 else {
@@ -32,7 +32,7 @@ else {
 	</div>
     <div class="container">
           <h1>Thanks for stopping by!</h1>  
-          <p>You have been logged out.</p>
+          <p>You have been logged out or you have been inactive for more than 15 minutes.</p>
           <br>
           <a href="index.php"><button class="btn btn-secondary btn-lg"/>Home</button></a>
 

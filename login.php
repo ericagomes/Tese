@@ -13,13 +13,13 @@
 		
 	<div class="header">
 		<?php include('./header.php');
-		include_once 'db.php';
+		include_once ('db.php');
 		?>
 	</div>
 	
 	
 	<div class="container">
-		<h2>Please fill the following information to login:</h2>
+		<h2>Please fill the following information to log in:</h2>
 		<br>
 		<form action="login.php" method="post">
 		  <div class="form-group">
@@ -28,12 +28,13 @@
 		  </div>
 		  <div class="form-group">	
 		 	<label for="password">Password:</label>
-			<input type="password" name="password" class="form-control" id="password" required>
+			<input type="password" name="password" class="form-control" placeholder="password" id="password" required>
 		  </div>
-		  <button type="submit" class="btn btn-secondary btn-lg" name="submit" >Login</button>
+		  <button type="submit" class="btn btn-secondary btn-lg" name="submit" >Log In</button>
+		  <br>
 		</form>
 		<br>
-		<a href="forgot.php"><button class="btn btn-secondary btn-sm" name="forgetpwd"/>I forgot my password</button></a>
+		<a href="forgot.php"><button class="btn btn-secondary" name="forgot"/>Forgot my password</button></a>
 	</div>
 	
 	<?php
@@ -67,7 +68,8 @@
 						$_SESSION['u_email']=$row['email'];
 						$_SESSION['u_type']=$row['admin'];
 						$_SESSION['u_group']=$row['group_id'];
-						$_SESSION['loggedin']=1;					
+						$group=$_SESSION['u_group'];
+						$_SESSION['loggedin']=1;	
 						$sql1="UPDATE users SET lastlogin=now() WHERE email='$email'";
 						$sql2="UPDATE users SET loggedin=1 WHERE email='$email'";
 						if (mysqli_query($conn, $sql1) AND mysqli_query($conn, $sql2) ) {
@@ -76,7 +78,10 @@
 						} 
 						else {
 							error_log("Error: " . $sql1 . $sql2 ."<br>" . mysqli_error($conn));
-							header("Location: ../login.php?login=connectionerror");
+							echo '<script language="javascript">';
+							echo 'alert("There was an error with the connection, please try again.");';
+							echo 'window.location = "login.php?login=connectionerror";';
+							echo '</script>';
 							exit();
 						}
 						mysqli_close($conn);

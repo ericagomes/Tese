@@ -1,8 +1,13 @@
 <?php
-
-include_once 'db.php';
-
-$sql1="UPDATE schedule SET zone=2 WHERE group_name='12C3';";
-mysqli_query($conn, $sql1);
+$server_ip   = '127.0.0.1';
+$server_port = 8887;
+$message = '100';
+print "Sending heartbeat to IP $server_ip, port $server_portn";
+echo "Sending heartbeat to IP $server_ip, port $server_portn";
+if ($socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP)) {
+    socket_sendto($socket, $message, strlen($message), 0, $server_ip, $server_port);
+} else {
+  print("can't create socketn");
+}
 
 ?>
